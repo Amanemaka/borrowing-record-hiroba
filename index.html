@@ -37,6 +37,7 @@
         margin: 10px;
         border-radius: 10px;
         border: 0 solid #000;
+        cursor: pointer;
       }
 
       button.disabled {
@@ -49,7 +50,6 @@
         background-color: #8fd18f;
       }
 
-      /* メニュー */
       .menu {
         display: flex;
         gap: 40px;
@@ -78,15 +78,10 @@
         z-index: 1;
       }
 
-      .tabletennis {
-        background-image: url("tabletennis.png");
-      }
-      .controller {
-        background-image: url("controller.png");
-      }
-      .boardgame {
-        background-image: url("boardgame.png");
-      }
+      .tabletennis { background-image: url("tabletennis.png"); }
+      .controller { background-image: url("controller.png"); }
+      .boardgame { background-image: url("boardgame.png"); }
+      .charger { background-image: url("charger.png"); }
 
       .select-area {
         display: flex;
@@ -102,12 +97,7 @@
         width: 300px;
       }
 
-      input:focus {
-        outline: none;
-        box-shadow: none;
-      }
-
-      input:hover {
+      input:focus, input:hover {
         outline: none;
         box-shadow: none;
       }
@@ -123,8 +113,7 @@
         border-collapse: collapse;
       }
 
-      th,
-      td {
+      th, td {
         border: 1px solid #000;
         padding: 10px;
       }
@@ -141,29 +130,15 @@
     <div class="screen active" id="screen1">
       <h1>貸出物品選択</h1>
       <div class="menu">
-        <button
-          class="menu-btn tabletennis"
-          onclick="selectItem('卓球ラケット')"
-        >
-          <span>卓球ラケット</span>
-        </button>
-        <button
-          class="menu-btn controller"
-          onclick="selectItem('コントローラー')"
-        >
-          <span>コントローラー</span>
-        </button>
-        <button
-          class="menu-btn boardgame"
-          onclick="selectItem('ボドゲ・その他')"
-        >
-          <span>ボドゲ・その他</span>
-        </button>
+        <button class="menu-btn tabletennis" onclick="selectItem('卓球ラケット')"><span>卓球ラケット</span></button>
+        <button class="menu-btn controller" onclick="selectItem('コントローラー')"><span>コントローラー</span></button>
+        <button class="menu-btn boardgame" onclick="selectItem('ボドゲ・その他')"><span>ボドゲ・その他</span></button>
+        <button class="menu-btn charger" onclick="selectItem('充電器類')"><span>充電器類</span></button>
       </div>
       <button onclick="showScreen(6)">返却確認</button>
     </div>
 
-    <!-- 卓球 -->
+    <!-- 画面2：卓球ラケット -->
     <div class="screen" id="screen2">
       <h1>卓球ラケット</h1>
       <p>複数選択できます</p>
@@ -174,7 +149,7 @@
       <button class="back" onclick="showScreen(1)">戻る</button>
     </div>
 
-    <!-- コントローラー -->
+    <!-- 画面3：コントローラー -->
     <div class="screen" id="screen3">
       <h1>コントローラー</h1>
       <p>1つ選択してください</p>
@@ -185,7 +160,7 @@
       <button class="back" onclick="showScreen(1)">戻る</button>
     </div>
 
-    <!-- ボドゲ -->
+    <!-- 画面4：ボドゲ・その他 -->
     <div class="screen" id="screen4">
       <h1>ボドゲ・その他</h1>
       <p>ボードゲームの種類を選んでください</p>
@@ -198,23 +173,33 @@
         <option value="将棋"></option>
         <option value="オセロ"></option>
       </datalist>
-
       <p>登録番号を入力し、借りるボタンを押してください</p>
       <input type="number" id="regNumber4" placeholder="登録番号" />
       <button onclick="borrowGame()">借りる</button>
       <button class="back" onclick="showScreen(1)">戻る</button>
     </div>
 
-    <!-- 返却 -->
+    <!-- 画面5：充電器類 -->
+    <div class="screen" id="screen5">
+      <h1>充電器類</h1>
+      <p>複数選択できます</p>
+      <div class="select-area" id="chargerArea"></div>
+      <p>登録番号を入力し、借りるボタンを押してください</p>
+      <input type="number" id="regNumber5" placeholder="登録番号" />
+      <button onclick="borrowCharger()">借りる</button>
+      <button class="back" onclick="showScreen(1)">戻る</button>
+    </div>
+
+    <!-- 画面6：返却確認 -->
     <div class="screen" id="screen6">
       <h1>返却確認</h1>
       <table>
         <thead>
           <tr>
             <th>日時</th>
-            <th>物品</th>
+            <th>借りたもの</th>
             <th>登録番号</th>
-            <th>確認者</th>
+            <th>返却確認</th>
           </tr>
         </thead>
         <tbody id="history"></tbody>
@@ -227,9 +212,7 @@
       let selected = { type: "", items: [] };
 
       function showScreen(n) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("active"));
+        document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
         document.getElementById("screen" + n).classList.add("active");
         if (n === 6) drawHistory();
       }
@@ -242,28 +225,31 @@
         } else if (type === "コントローラー") {
           createControllers();
           showScreen(3);
-        } else {
+        } else if (type === "ボドゲ・その他") {
           showScreen(4);
+        } else if (type === "充電器類") {
+          createChargers();
+          showScreen(5);
         }
       }
 
       function createRackets() {
         const area = document.getElementById("racketArea");
         area.innerHTML = "";
-        [1, 2, 3, 4].forEach((n) => {
-          const inUse = data.some(
-            (d) => d.type === "卓球ラケット" && d.item == n && d.checker === ""
-          );
+        [1,2,3,4].forEach(n => {
+          const inUse = data.some(d => d.type==="卓球ラケット" && d.item==n && d.checker==="");
           const b = document.createElement("button");
           b.textContent = n;
-          if (inUse) {
-            b.classList.add("disabled");
-          } else {
-            b.onclick = () => {
-              selected.items = [n];
+          if (inUse) b.classList.add("disabled");
+          else b.onclick = () => {
+            if (selected.items.includes(n)) {
+              selected.items = selected.items.filter(x=>x!==n);
+              b.classList.remove("selected");
+            } else {
+              selected.items.push(n);
               b.classList.add("selected");
-            };
-          }
+            }
+          };
           area.appendChild(b);
         });
       }
@@ -271,25 +257,46 @@
       function createControllers() {
         const area = document.getElementById("controllerArea");
         area.innerHTML = "";
-        [1, 2, 3, 4, 5, 6, 7, 8, "ジョイコン"].forEach((n) => {
-          const inUse = data.some(
-            (d) =>
-              d.type === "コントローラー" && d.item == n && d.checker === ""
-          );
+        [1,2,3,4,5,6,7,8,"ジョイコン"].forEach(n=>{
+          const inUse = data.some(d=>d.type==="コントローラー" && d.item==n && d.checker==="");
           const b = document.createElement("button");
           b.textContent = n;
-          if (inUse) {
-            b.classList.add("disabled");
-          } else {
-            b.onclick = () => {
-              document
-                .querySelectorAll("#controllerArea button")
-                .forEach((btn) => btn.classList.remove("selected"));
-              b.classList.add("selected");
-              selected.items = [n];
-            };
-          }
+          if (inUse) b.classList.add("disabled");
+          else b.onclick = () => {
+            area.querySelectorAll("button").forEach(btn=>btn.classList.remove("selected"));
+            b.classList.add("selected");
+            selected.items = [n];
+          };
           area.appendChild(b);
+        });
+      }
+
+      function createChargers() {
+        const area = document.getElementById("chargerArea");
+        area.innerHTML = "";
+        const types = [
+          {name:"延長コード", count:9},
+          {name:"充電器", count:10},
+          {name:"充電コード", count:12}
+        ];
+        types.forEach(t=>{
+          for(let i=1;i<=t.count;i++){
+            const itemName = `${t.name}${i}`;
+            const inUse = data.some(d=>d.type==="充電器類" && d.item===itemName && d.checker==="");
+            const b = document.createElement("button");
+            b.textContent = itemName;
+            if (inUse) b.classList.add("disabled");
+            else b.onclick = () => {
+              if (selected.items.includes(itemName)) {
+                selected.items = selected.items.filter(x=>x!==itemName);
+                b.classList.remove("selected");
+              } else {
+                selected.items.push(itemName);
+                b.classList.add("selected");
+              }
+            };
+            area.appendChild(b);
+          }
         });
       }
 
@@ -297,23 +304,12 @@
         const active = document.querySelector(".screen.active");
         const input = active.querySelector("input[type='number']");
         const num = input.value;
-        if (!num || selected.items.length === 0) return;
-
-        selected.items.forEach((item) => {
-          const inUse = data.some(
-            (d) =>
-              d.type === selected.type && d.item == item && d.checker === ""
-          );
-          if (inUse) return alert("貸出中です");
-          data.push({
-            type: selected.type,
-            item,
-            number: num,
-            date: new Date().toLocaleString(),
-            checker: "",
-          });
+        if(!num || selected.items.length===0) return;
+        selected.items.forEach(item=>{
+          const inUse = data.some(d=>d.type===selected.type && d.item==item && d.checker==="");
+          if(inUse) return alert("貸出中です");
+          data.push({type:selected.type, item, number:num, date:new Date().toLocaleString(), checker:""});
         });
-
         localStorage.setItem("lendData", JSON.stringify(data));
         showScreen(1);
       }
@@ -321,20 +317,19 @@
       function borrowGame() {
         const name = document.getElementById("gameInput").value;
         const num = document.getElementById("regNumber4").value;
-        if (!name || !num) return;
+        if(!name || !num) return;
+        const inUse = data.some(d=>d.type==="ボドゲ・その他" && d.item===name && d.checker==="");
+        if(inUse) return alert("貸出中です");
+        data.push({type:"ボドゲ・その他", item:name, number:num, date:new Date().toLocaleString(), checker:""});
+        localStorage.setItem("lendData", JSON.stringify(data));
+        showScreen(1);
+      }
 
-        const inUse = data.some(
-          (d) =>
-            d.type === "ボドゲ・その他" && d.item === name && d.checker === ""
-        );
-        if (inUse) return alert("貸出中です");
-
-        data.push({
-          type: "ボドゲ・その他",
-          item: name,
-          number: num,
-          date: new Date().toLocaleString(),
-          checker: "",
+      function borrowCharger() {
+        const num = document.getElementById("regNumber5").value;
+        if(!num || selected.items.length===0) return;
+        selected.items.forEach(item=>{
+          data.push({type:"充電器類", item, number:num, date:new Date().toLocaleString(), checker:""});
         });
         localStorage.setItem("lendData", JSON.stringify(data));
         showScreen(1);
@@ -343,20 +338,26 @@
       function drawHistory() {
         const body = document.getElementById("history");
         body.innerHTML = "";
-        [...data].reverse().forEach((d, i) => {
+        data.forEach((d,i)=>{
           const tr = document.createElement("tr");
           tr.innerHTML = `
             <td>${d.date}</td>
             <td>${d.type}${d.item}</td>
             <td>${d.number}</td>
             <td>
-              <select onchange="data[${i}].checker=this.value;localStorage.setItem('lendData',JSON.stringify(data))">
+              <select id="checker-${i}">
                 <option value=""></option>
                 <option value="確認">確認</option>
               </select>
             </td>`;
-          tr.querySelector("select").value = d.checker;
           body.appendChild(tr);
+
+          const select = document.getElementById(`checker-${i}`);
+          select.value = d.checker;
+          select.addEventListener("change", ()=>{
+            data[i].checker = select.value;
+            localStorage.setItem("lendData", JSON.stringify(data));
+          });
         });
       }
     </script>
