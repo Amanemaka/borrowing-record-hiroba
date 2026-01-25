@@ -550,7 +550,7 @@
       }
 
       function createController() {
-        controllerArea.innerHTML = joyconArea.innerHTML = "";
+        controllerArea.innerHTML = joyconArea.innerHTML = switchArea.innerHTML = "";
         [...Array(8)].forEach((_, i) =>
           addSingle(controllerArea, "コントローラー", i + 1),
         );
@@ -564,9 +564,12 @@
 
       function addSingle(area, label, item) {
         const fullItem = `${label}${item}`;
+        // Switchはtypeを"Switch"、他は"コントローラー"で判定
+        const typeForCheck = label === "Switch" ? "Switch" : "コントローラー";
+
         const inUse = data.some(
           (d) =>
-            d.type === "コントローラー" && d.item === fullItem && !d.checker,
+            d.type === typeForCheck && d.item === fullItem && !d.checker,
         );
         const b = document.createElement("button");
         b.textContent = item;
@@ -576,7 +579,7 @@
             document
               .querySelectorAll("#controllerArea button,#joyconArea button,#switchArea button")
               .forEach((btn) => btn.classList.remove("selected"));
-            selected.items = [`${label}${item}`];
+            selected.items = [fullItem];
             b.classList.add("selected");
           };
         area.appendChild(b);
