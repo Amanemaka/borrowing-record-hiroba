@@ -389,6 +389,9 @@
 
         <div class="label">ジョイコン</div>
         <div class="button-area" id="joyconArea"></div>
+
+        <div class="label">Switch</div>
+        <div class="button-area" id="switchArea"></div>
       </div>
 
       <div class="bottom-fixed">
@@ -554,6 +557,9 @@
         [...Array(1)].forEach((_, i) =>
           addSingle(joyconArea, "ジョイコン", i + 1),
         );
+        [...Array(2)].forEach((_, i) =>
+          addSingle(switchArea, "Switch", i + 1),
+        );
       }
 
       function addSingle(area, label, item) {
@@ -568,7 +574,7 @@
         else
           b.onclick = () => {
             document
-              .querySelectorAll("#controllerArea button,#joyconArea button")
+              .querySelectorAll("#controllerArea button,#joyconArea button,#switchArea button")
               .forEach((btn) => btn.classList.remove("selected"));
             selected.items = [`${label}${item}`];
             b.classList.add("selected");
