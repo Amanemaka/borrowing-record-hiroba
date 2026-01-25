@@ -256,6 +256,14 @@
         gap: 1rem;
       }
 
+      .reg-note {
+        font-size: 18px;              /* 文字を大きく */
+        font-weight: bold;            /* 太字 */
+        color: #cd383a;               /* 既存の赤色変数と同系色 */
+        margin-bottom: 0.5rem;
+      }
+
+
       .borrow-btn {
         background: var(--color-primary);
         color: #fff;
@@ -361,6 +369,7 @@
       </div>
 
       <div class="bottom-fixed">
+        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
         <input type="number" id="regRacket" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrow()">借りる</button>
       </div>
@@ -383,6 +392,7 @@
       </div>
 
       <div class="bottom-fixed">
+        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
         <input type="number" id="regController" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrow()">借りる</button>
       </div>
@@ -408,6 +418,7 @@
       />
 
       <div class="bottom-fixed">
+        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
         <input type="number" id="regBoard" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrowGame()">借りる</button>
       </div>
@@ -433,6 +444,7 @@
       </div>
 
       <div class="bottom-fixed">
+        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
         <input type="number" id="regCharger" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrow()">借りる</button>
       </div>
