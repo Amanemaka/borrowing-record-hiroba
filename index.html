@@ -136,17 +136,23 @@
 
       /* ===== ホーム画面 ===== */
       .menu {
-        display: flex;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(1, 200px);
         justify-content: center;
-        flex-wrap: wrap;
         gap: 1.5rem;
         margin: 5rem 0;
       }
 
-      @media (max-width: 920px) {
+      @media (min-width: 450px) {
         .menu {
-          margin: 2rem;
+          grid-template-columns: repeat(2, 200px);
+        }
+      }
+
+      @media (min-width: 920px) {
+        .menu {
+          grid-template-columns: repeat(4, 200px);
+          margin: 5rem 0;
         }
       }
 
@@ -256,13 +262,11 @@
         gap: 1rem;
       }
 
-      .reg-note {
-        font-size: 18px;              /* 文字を大きく */
-        font-weight: bold;            /* 太字 */
-        color: #cd383a;               /* 既存の赤色変数と同系色 */
-        margin-bottom: 0.5rem;
+      .bottom-fixed > p {
+        margin: 0;
+        color: var(--color-red);
+        font-weight: bold;
       }
-
 
       .borrow-btn {
         background: var(--color-primary);
@@ -335,11 +339,20 @@
         <button class="menu-btn" onclick="selectItem('卓球ラケット')">
           <img src="tabletennis.png" /><span>卓球ラケット</span>
         </button>
-        <button class="menu-btn" onclick="selectItem('コントローラー')">
-          <img src="controller.png" /><span>コントローラー</span>
+        <button class="menu-btn" onclick="selectItem('Switch・コントローラー')">
+          <img src="controller.png" />
+          <span>
+            Switch<br />
+            コントローラー
+          </span>
         </button>
-        <button class="menu-btn" onclick="selectItem('ボドゲ・その他')">
-          <img src="boardgame.png" /><span>ボドゲ・その他</span>
+        <button class="menu-btn" onclick="selectItem('ボドゲ・タブレット・その他')">
+          <img src="boardgame.png" />
+          <span>
+            ボドゲ<br />
+            タブレット<br />
+            その他
+          </span>
         </button>
         <button class="menu-btn" onclick="selectItem('充電器類')">
           <img src="cord.png" /><span>充電器類</span>
@@ -369,7 +382,7 @@
       </div>
 
       <div class="bottom-fixed">
-        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
+        <p>※未登録の方は「0000」を入力してください</p>
         <input type="number" id="regRacket" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrow()">借りる</button>
       </div>
@@ -380,22 +393,22 @@
       <button class="back-btn" onclick="showScreen('home')">
         <i class="fa-solid fa-angle-left"></i>
       </button>
-      <h1>コントローラー</h1>
+      <h1>Switch・コントローラー</h1>
       <p>番号を選択してください</p>
 
       <div class="select-area">
+        <div class="label">Switch</div>
+        <div class="button-area" id="switchArea"></div>
+
         <div class="label">コントローラー</div>
         <div class="button-area" id="controllerArea"></div>
 
         <div class="label">ジョイコン</div>
         <div class="button-area" id="joyconArea"></div>
-
-        <div class="label">Switch</div>
-        <div class="button-area" id="switchArea"></div>
       </div>
 
       <div class="bottom-fixed">
-        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
+        <p>※未登録の方は「0000」を入力してください</p>
         <input type="number" id="regController" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrow()">借りる</button>
       </div>
@@ -406,7 +419,7 @@
       <button class="back-btn" onclick="showScreen('home')">
         <i class="fa-solid fa-angle-left"></i>
       </button>
-      <h1>ボドゲ・その他</h1>
+      <h1>ボドゲ・タブレット・その他</h1>
       <p>ゲームを選択、または直接入力してください</p>
 
       <div class="select-area">
@@ -421,7 +434,7 @@
       />
 
       <div class="bottom-fixed">
-        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
+        <p>※未登録の方は「0000」を入力してください</p>
         <input type="number" id="regBoard" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrowGame()">借りる</button>
       </div>
@@ -447,7 +460,7 @@
       </div>
 
       <div class="bottom-fixed">
-        <div class="reg-note">※未登録の方は「0000」を入力してください</div>
+        <p>※未登録の方は「0000」を入力してください</p>
         <input type="number" id="regCharger" placeholder="登録番号を入力" />
         <button class="borrow-btn" onclick="borrow()">借りる</button>
       </div>
@@ -503,10 +516,10 @@
         if (type === "卓球ラケット") {
           createMulti("racketArea", type, "卓球ラケット", [1, 2, 3, 4]);
           showScreen("racket");
-        } else if (type === "コントローラー") {
+        } else if (type === "Switch・コントローラー") {
           createController();
           showScreen("controller");
-        } else if (type === "ボドゲ・その他") {
+        } else if (type === "ボドゲ・タブレット・その他") {
           createBoardgames();
           showScreen("boardgame");
         } else {
@@ -550,26 +563,24 @@
       }
 
       function createController() {
-        controllerArea.innerHTML = joyconArea.innerHTML = switchArea.innerHTML = "";
+        switchArea.innerHTML =
+          controllerArea.innerHTML =
+          joyconArea.innerHTML =
+            ""; // 画面を表示するたびにボタンの表示をリセットする
+        [...Array(2)].forEach((_, i) => addSingle(switchArea, "Switch", i + 1));
         [...Array(8)].forEach((_, i) =>
           addSingle(controllerArea, "コントローラー", i + 1),
         );
         [...Array(1)].forEach((_, i) =>
           addSingle(joyconArea, "ジョイコン", i + 1),
         );
-        [...Array(2)].forEach((_, i) =>
-          addSingle(switchArea, "Switch", i + 1),
-        );
       }
 
       function addSingle(area, label, item) {
         const fullItem = `${label}${item}`;
-        // Switchはtypeを"Switch"、他は"コントローラー"で判定
-        const typeForCheck = label === "Switch" ? "Switch" : "コントローラー";
-
         const inUse = data.some(
           (d) =>
-            d.type === typeForCheck && d.item === fullItem && !d.checker,
+            d.type === "Switch・コントローラー" && d.item === fullItem && !d.checker,
         );
         const b = document.createElement("button");
         b.textContent = item;
@@ -577,9 +588,11 @@
         else
           b.onclick = () => {
             document
-              .querySelectorAll("#controllerArea button,#joyconArea button,#switchArea button")
+              .querySelectorAll(
+                "#switchArea button,#controllerArea button,#joyconArea button",
+              )
               .forEach((btn) => btn.classList.remove("selected"));
-            selected.items = [fullItem];
+            selected.items = [`${label}${item}`];
             b.classList.add("selected");
           };
         area.appendChild(b);
@@ -590,15 +603,14 @@
         const list = [
           "トランプ",
           "UNO",
-          "ジェンガ",
-          "dobble",
-          "将棋",
           "オセロ",
+          "タブレット桃",
+          "タブレット黒"
         ];
         boardgameArea.innerHTML = "";
         list.forEach((name) => {
           const inUse = data.some(
-            (d) => d.type === "ボドゲ・その他" && d.item === name && !d.checker,
+            (d) => d.type === "ボドゲ・タブレット・その他" && d.item === name && !d.checker,
           );
           const b = document.createElement("button");
           b.textContent = name;
@@ -669,7 +681,7 @@
         const num = regBoard.value;
         if (!name || !num) return;
         data.push({
-          type: "ボドゲ・その他",
+          type: "ボドゲ・タブレット・その他",
           item: name,
           number: num,
           date: new Date().toLocaleString(),
