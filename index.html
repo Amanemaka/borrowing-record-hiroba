@@ -568,10 +568,10 @@
           joyconArea.innerHTML =
             ""; // 画面を表示するたびにボタンの表示をリセットする
         [...Array(2)].forEach((_, i) => addSingle(switchArea, "Switch", i + 1));
-        [...Array(8)].forEach((_, i) =>
+        [...Array(10)].forEach((_, i) =>
           addSingle(controllerArea, "コントローラー", i + 1),
         );
-        [...Array(1)].forEach((_, i) =>
+        [...Array(2)].forEach((_, i) =>
           addSingle(joyconArea, "ジョイコン", i + 1),
         );
       }
