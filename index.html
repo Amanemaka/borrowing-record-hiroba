@@ -4,21 +4,22 @@
     <meta charset="UTF-8" />
     <title>物品貸出管理</title>
 
-    <!-- ブラウザ間の見た目を統一する -->
+    <!-- ブラウザごとのデフォルトスタイルを統一 -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
     />
 
-    <!-- 外部サイトのアイコンを利用する -->
+    <!-- Font Awesome：アイコンフォントの読み込み -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
 
-    <!-- 見た目の設定（プログラミング言語：CSS） -->
+    <!-- スタイルシート（CSS） -->
     <style>
-      /* ===== 全体 ===== */
+      /* ===== デザイントークン ===== */
+      /* アプリ全体で使う色とシャドウをここで一元管理する */
       :root {
         --color-primary: #4ea72e;
         --color-red: #cd383a;
@@ -33,6 +34,8 @@
         background: var(--bg-main);
       }
 
+      /* ===== 画面（ページ）の表示切り替え ===== */
+      /* .active クラスの付け外しで表示するページを切り替える */
       .screen {
         display: none;
         min-height: 100vh;
@@ -43,7 +46,7 @@
         display: block;
       }
 
-      /* ===== タイトルと説明 ===== */
+      /* ===== 見出し・説明文 ===== */
       h1,
       p {
         display: flex;
@@ -69,7 +72,7 @@
         }
       }
 
-      /* ===== ボタン共通 ===== */
+      /* ===== ボタン：基本スタイルと状態バリエーション ===== */
       button {
         font-size: 18px;
         padding: 14px 20px;
@@ -94,7 +97,7 @@
         pointer-events: none;
       }
 
-      /* ===== 入力欄 ===== */
+      /* ===== テキスト入力欄 ===== */
       input:not([type="checkbox"]) {
         font-size: 18px;
         width: 15rem;
@@ -115,7 +118,7 @@
         outline: none;
       }
 
-      /* ===== 戻るボタン ===== */
+      /* ===== 戻るボタン（各ページ左上に固定表示） ===== */
       .back-btn {
         position: fixed;
         top: 1rem;
@@ -134,7 +137,7 @@
         z-index: 2;
       }
 
-      /* ===== ホーム画面 ===== */
+      /* ===== ホーム画面：物品カテゴリのメニュー ===== */
       .menu {
         display: grid;
         grid-template-columns: repeat(1, 200px);
@@ -156,6 +159,7 @@
         }
       }
 
+      /* メニューボタン：背景画像をボタン全体に敷き、テキストをその上に重ねる */
       .menu-btn {
         width: 200px;
         height: 200px;
@@ -181,6 +185,7 @@
         text-shadow: 0 0 10px #fff;
       }
 
+      /* ===== ナビゲーションバー（貸出履歴ボタン） ===== */
       nav {
         position: fixed;
         bottom: 0;
@@ -200,6 +205,7 @@
         box-shadow: none;
       }
 
+      /* ===== トースト通知 ===== */
       .toasts {
         position: fixed;
         bottom: 4rem;
@@ -221,7 +227,7 @@
         margin-bottom: 0.5rem;
       }
 
-      /* ===== 番号選択エリア ===== */
+      /* ===== 物品選択画面：番号・名前の選択エリア ===== */
       .select-area {
         display: grid;
         grid-template-columns: 1fr 5fr;
@@ -248,7 +254,7 @@
         display: block;
       }
 
-      /* ===== 登録番号入力欄と借りるボタン ===== */
+      /* ===== 画面下部の固定エリア：登録番号入力と借りるボタン ===== */
       .bottom-fixed {
         position: fixed;
         left: 0;
@@ -275,7 +281,7 @@
         min-width: 10rem;
       }
 
-      /* ===== 貸出履歴 ===== */
+      /* ===== 貸出履歴テーブル ===== */
       table {
         width: 100%;
         border-collapse: collapse;
@@ -294,6 +300,7 @@
         color: #fff;
       }
 
+      /* 全削除ボタン（履歴画面の右上に固定表示） */
       .all-delete-btn {
         position: fixed;
         top: 1rem;
@@ -320,6 +327,7 @@
         vertical-align: middle;
       }
 
+      /* 行削除アイコン */
       td > i {
         width: 1rem;
         height: 1rem;
@@ -329,35 +337,14 @@
     </style>
   </head>
 
-  <!-- 構造の設定（プログラミング言語：HTML） -->
+  <!-- マークアップ（HTML） -->
   <body>
-    <!-- ホーム -->
+    <!-- ホーム：物品カテゴリの選択 -->
     <div class="screen active" id="home">
       <h1>貸出物品選択</h1>
 
-      <div class="menu">
-        <button class="menu-btn" onclick="selectItem('卓球ラケット')">
-          <img src="tabletennis.png" /><span>卓球ラケット</span>
-        </button>
-        <button class="menu-btn" onclick="selectItem('Switch・コントローラー')">
-          <img src="controller.png" />
-          <span>
-            Switch<br />
-            コントローラー
-          </span>
-        </button>
-        <button class="menu-btn" onclick="selectItem('ボドゲ・タブレット・その他')">
-          <img src="boardgame.png" />
-          <span>
-            ボドゲ<br />
-            タブレット<br />
-            その他
-          </span>
-        </button>
-        <button class="menu-btn" onclick="selectItem('充電器類')">
-          <img src="cord.png" /><span>充電器類</span>
-        </button>
-      </div>
+      <!-- MENU_CONFIG をもとに JavaScript でボタンを生成する -->
+      <div class="menu" id="menuArea"></div>
 
       <div class="toasts" id="toasts"></div>
 
@@ -376,10 +363,8 @@
       <h1>卓球ラケット</h1>
       <p>番号を選択してください（複数選択可）</p>
 
-      <div class="select-area">
-        <div class="label">卓球ラケット</div>
-        <div class="button-area" id="racketArea"></div>
-      </div>
+      <!-- PAGE_CONFIG をもとに JavaScript でラベルとボタン群を生成する -->
+      <div class="select-area" id="racketSelectArea"></div>
 
       <div class="bottom-fixed">
         <p>※未登録の方は「0000」を入力してください</p>
@@ -396,16 +381,8 @@
       <h1>Switch・コントローラー</h1>
       <p>番号を選択してください</p>
 
-      <div class="select-area">
-        <div class="label">Switch</div>
-        <div class="button-area" id="switchArea"></div>
-
-        <div class="label">コントローラー</div>
-        <div class="button-area" id="controllerArea"></div>
-
-        <div class="label">ジョイコン</div>
-        <div class="button-area" id="joyconArea"></div>
-      </div>
+      <!-- PAGE_CONFIG をもとに JavaScript でラベルとボタン群を生成する -->
+      <div class="select-area" id="controllerSelectArea"></div>
 
       <div class="bottom-fixed">
         <p>※未登録の方は「0000」を入力してください</p>
@@ -414,7 +391,7 @@
       </div>
     </div>
 
-    <!-- ボドゲ -->
+    <!-- ボドゲ・その他 -->
     <div class="screen" id="boardgame">
       <button class="back-btn" onclick="showScreen('home')">
         <i class="fa-solid fa-angle-left"></i>
@@ -424,6 +401,7 @@
 
       <div class="select-area">
         <div class="label">ゲーム</div>
+        <!-- BOARDGAME_LIST をもとに JavaScript でボタンを生成する -->
         <div class="button-area" id="boardgameArea"></div>
       </div>
       <input
@@ -440,7 +418,7 @@
       </div>
     </div>
 
-    <!-- 充電器 -->
+    <!-- 充電器類 -->
     <div class="screen" id="charger">
       <button class="back-btn" onclick="showScreen('home')">
         <i class="fa-solid fa-angle-left"></i>
@@ -448,16 +426,8 @@
       <h1>充電器類</h1>
       <p>番号を選択してください（複数選択可）</p>
 
-      <div class="select-area">
-        <div class="label">ライトニング（iPhone）</div>
-        <div class="button-area" id="chargerUnit"></div>
-
-        <div class="label">タイプC</div>
-        <div class="button-area" id="chargerCable"></div>
-
-        <div class="label">延長コード</div>
-        <div class="button-area" id="extensionCable"></div>
-      </div>
+      <!-- PAGE_CONFIG をもとに JavaScript でラベルとボタン群を生成する -->
+      <div class="select-area" id="chargerSelectArea"></div>
 
       <div class="bottom-fixed">
         <p>※未登録の方は「0000」を入力してください</p>
@@ -466,7 +436,7 @@
       </div>
     </div>
 
-    <!-- 貸出履歴 -->
+    <!-- 貸出履歴：全貸出記録の一覧・返却確認・削除 -->
     <div class="screen" id="history">
       <button class="back-btn" onclick="showScreen('home')">
         <i class="fa-solid fa-angle-left"></i>
@@ -491,18 +461,152 @@
       </table>
     </div>
 
-    <!-- 動きの設定（プログラミング言語：JavaScript） -->
+    <!-- スクリプト（JavaScript） -->
     <script>
+      // =====================================================
+      // 物品データの設定
+      // ページ・物品を追加・変更したい場合はここを編集する
+      // =====================================================
+
+      // ホーム画面のメニューボタンの設定
+      // ページを増やす場合は、ここに追加する
+      const MENU_CONFIG = [
+        { label: "卓球ラケット", screen: "racket", image: "tabletennis.png" },
+        {
+          label: "Switch<br>コントローラー",
+          screen: "controller",
+          image: "controller.png",
+        },
+        {
+          label: "ボドゲ<br>タブレット<br>その他",
+          screen: "boardgame",
+          image: "boardgame.png",
+        },
+        { label: "充電器類", screen: "charger", image: "cord.png" },
+      ];
+
+      // 各ページの物品グループの設定
+      // ・type: "multi"  → 複数選択
+      // ・type: "single" → 1つだけ選択
+      // ・list に番号を追加・削除すれば、ボタンが増減する
+      const PAGE_CONFIG = {
+        racket: [
+          {
+            areaId: "racketArea",
+            label: "卓球ラケット",
+            type: "multi",
+            list: [1, 2, 3, 4],
+          },
+        ],
+        controller: [
+          {
+            areaId: "switchArea",
+            label: "Switch",
+            type: "single",
+            list: [1, 2],
+          },
+          {
+            areaId: "controllerArea",
+            label: "コントローラー",
+            type: "single",
+            list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+          },
+          {
+            areaId: "joyconArea",
+            label: "ジョイコン",
+            type: "single",
+            list: [1, 2],
+          },
+        ],
+        charger: [
+          {
+            areaId: "chargerUnit",
+            label: "ライトニング (iPhone)",
+            type: "multi",
+            list: [1, 2, 3, 4, 5, 6],
+          },
+          {
+            areaId: "chargerCable",
+            label: "タイプC",
+            type: "multi",
+            list: [1, 2, 3, 4, 5, 6],
+          },
+          {
+            areaId: "extensionCable",
+            label: "延長コード",
+            type: "multi",
+            list: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+          },
+        ],
+      };
+
+      // ボドゲの種類を増やす場合は、以下の配列内に名前を追加
+      const BOARDGAME_LIST = [
+        "トランプ",
+        "UNO",
+        "オセロ",
+        "タブレット桃",
+        "タブレット黒",
+      ];
+
+      // 貸出履歴の最大保存件数（超えた場合は最も古い記録を削除）
+      const MAX_HISTORY = 300;
+
+      // =====================================================
+      // 状態管理
+      // =====================================================
+
+      // 貸出データをローカルストレージから読み込む（初回は空配列）
       let data = JSON.parse(localStorage.getItem("lendData") || "[]");
+
+      // 現在選択中の物品カテゴリと物品名を保持する
       let selected = { type: "", items: [] };
 
+      // =====================================================
+      // 画面の初期化・切り替え
+      // =====================================================
+
+      // ホーム画面のメニューボタンを MENU_CONFIG から動的に生成する
+      function buildMenu() {
+        const menuArea = document.getElementById("menuArea");
+        MENU_CONFIG.forEach(({ label, screen, image }) => {
+          const btn = document.createElement("button");
+          btn.className = "menu-btn";
+          btn.innerHTML = `<img src="${image}" /><span>${label}</span>`;
+          btn.onclick = () => selectItem(label, screen);
+          menuArea.appendChild(btn);
+        });
+      }
+
+      // 物品選択画面のラベルとボタン領域を PAGE_CONFIG から動的に生成する
+      function buildSelectArea(screen) {
+        const groups = PAGE_CONFIG[screen];
+        if (!groups) return;
+
+        const areaEl = document.getElementById(`${screen}SelectArea`);
+        areaEl.innerHTML = "";
+
+        groups.forEach(({ areaId, label }) => {
+          const labelEl = document.createElement("div");
+          labelEl.className = "label";
+          labelEl.textContent = label;
+
+          const buttonAreaEl = document.createElement("div");
+          buttonAreaEl.className = "button-area";
+          buttonAreaEl.id = areaId;
+
+          areaEl.appendChild(labelEl);
+          areaEl.appendChild(buttonAreaEl);
+        });
+      }
+
+      // 指定した画面に切り替える
+      // 切り替えのたびに入力欄を空にし、履歴画面を開くときだけ表示内容を最新に更新する
       function showScreen(id) {
-        // 入力欄を全部クリア
         document
           .querySelectorAll('.screen input:not([type="checkbox"])')
           .forEach((input) => (input.value = ""));
 
-        // 画面切り替え
         document
           .querySelectorAll(".screen")
           .forEach((s) => s.classList.remove("active"));
@@ -511,47 +615,72 @@
         if (id === "history") drawHistory();
       }
 
-      function selectItem(type) {
+      // ホーム画面でメニューボタンを押したときに選択状態をリセットしてから表示する
+      function selectItem(type, screen) {
         selected = { type, items: [] };
-        if (type === "卓球ラケット") {
-          createMulti("racketArea", type, "卓球ラケット", [1, 2, 3, 4]);
-          showScreen("racket");
-        } else if (type === "Switch・コントローラー") {
-          createController();
-          showScreen("controller");
-        } else if (type === "ボドゲ・タブレット・その他") {
+
+        if (screen === "boardgame") {
           createBoardgames();
-          showScreen("boardgame");
         } else {
-          createChargers();
-          showScreen("charger");
+          buildSelectArea(screen);
+          fillButtons(screen);
         }
+
+        showScreen(screen);
       }
 
-      function createMulti(areaId, type, label, list) {
-        const area = document.getElementById(areaId);
-        area.innerHTML = "";
+      // =====================================================
+      // 物品ボタンの生成と選択ロジック
+      // =====================================================
 
-        list.forEach((n) => {
-          const fullItem = `${label}${n}`;
+      // PAGE_CONFIG をもとに各物品グループのボタンを生成する
+      // 貸出中の物品はグレーアウトし、選択モード（multi / single）に応じた挙動を設定する
+      function fillButtons(screen) {
+        const groups = PAGE_CONFIG[screen];
+        if (!groups) return;
 
-          const inUse = data.some(
-            (d) => d.type === type && d.item === fullItem && !d.checker,
-          );
+        groups.forEach(({ areaId, label, type, list }) => {
+          const area = document.getElementById(areaId);
+          area.innerHTML = "";
 
-          const b = document.createElement("button");
-          b.textContent = n;
+          list.forEach((n) => {
+            const fullItem = `${label}${n}`;
+            const inUse = data.some(
+              (d) =>
+                d.type === selected.type && d.item === fullItem && !d.checker,
+            );
+            const btn = document.createElement("button");
+            btn.textContent = n;
 
-          if (inUse) {
-            b.classList.add("disabled");
-          } else {
-            b.onclick = () => toggleSelect(b, fullItem);
-          }
+            if (inUse) {
+              // 貸出中：選択不可
+              btn.classList.add("disabled");
+            } else if (type === "multi") {
+              // 複数選択モード：クリックするたびに選択・解除を切り替える
+              btn.onclick = () => toggleSelect(btn, fullItem);
+            } else {
+              // 単一選択モード：選択中のボタンを再度押すと解除、別のボタンを押すと切り替え
+              btn.onclick = () => {
+                const isSelected = selected.items.includes(fullItem);
+                document
+                  .querySelectorAll(`#${areaId} button`)
+                  .forEach((b) => b.classList.remove("selected"));
+                selected.items = selected.items.filter(
+                  (i) => !i.startsWith(label),
+                );
+                if (!isSelected) {
+                  selected.items.push(fullItem);
+                  btn.classList.add("selected");
+                }
+              };
+            }
 
-          area.appendChild(b);
+            area.appendChild(btn);
+          });
         });
       }
 
+      // 複数選択モードでの選択・解除の切り替え
       function toggleSelect(btn, item) {
         if (selected.items.includes(item)) {
           selected.items = selected.items.filter((i) => i !== item);
@@ -562,148 +691,93 @@
         }
       }
 
-      function createController() {
-        switchArea.innerHTML =
-          controllerArea.innerHTML =
-          joyconArea.innerHTML =
-            ""; // 画面を表示するたびにボタンの表示をリセットする
-        [...Array(2)].forEach((_, i) => addSingle(switchArea, "Switch", i + 1));
-        [...Array(10)].forEach((_, i) =>
-          addSingle(controllerArea, "コントローラー", i + 1),
-        );
-        [...Array(2)].forEach((_, i) =>
-          addSingle(joyconArea, "ジョイコン", i + 1),
-        );
-      }
-
-      function addSingle(area, label, item) {
-        const fullItem = `${label}${item}`;
-        const inUse = data.some(
-          (d) =>
-            d.type === "Switch・コントローラー" && d.item === fullItem && !d.checker,
-        );
-        const b = document.createElement("button");
-        b.textContent = item;
-        if (inUse) b.classList.add("disabled");
-        else
-          b.onclick = () => {
-            document
-              .querySelectorAll(
-                "#switchArea button,#controllerArea button,#joyconArea button",
-              )
-              .forEach((btn) => btn.classList.remove("selected"));
-            selected.items = [`${label}${item}`];
-            b.classList.add("selected");
-          };
-        area.appendChild(b);
-      }
-
-      // ゲームの種類を増やす場合は、以下の配列内に名前を追加
+      // ボドゲ画面のボタンを BOARDGAME_LIST から生成する
+      // 貸出中のゲームはグレーアウトし、選択中のゲームを再度押すと解除できる
       function createBoardgames() {
-        const list = [
-          "トランプ",
-          "UNO",
-          "オセロ",
-          "タブレット桃",
-          "タブレット黒"
-        ];
-        boardgameArea.innerHTML = "";
-        list.forEach((name) => {
+        const area = document.getElementById("boardgameArea");
+        area.innerHTML = "";
+
+        BOARDGAME_LIST.forEach((name) => {
           const inUse = data.some(
-            (d) => d.type === "ボドゲ・タブレット・その他" && d.item === name && !d.checker,
+            (d) => d.type === "ボドゲ・その他" && d.item === name && !d.checker,
           );
-          const b = document.createElement("button");
-          b.textContent = name;
-          if (inUse) b.classList.add("disabled");
-          else
-            b.onclick = () => {
+          const btn = document.createElement("button");
+          btn.textContent = name;
+
+          if (inUse) {
+            btn.classList.add("disabled");
+          } else {
+            btn.onclick = () => {
               if (selected.items[0] === name) {
                 selected.items = [];
-                b.classList.remove("selected");
+                btn.classList.remove("selected");
               } else {
                 document
                   .querySelectorAll("#boardgameArea button")
-                  .forEach((btn) => btn.classList.remove("selected"));
+                  .forEach((b) => b.classList.remove("selected"));
                 selected.items = [name];
-                b.classList.add("selected");
+                btn.classList.add("selected");
               }
             };
-          boardgameArea.appendChild(b);
-        });
-      }
-
-      function createChargers() {
-        createMulti(
-          "chargerUnit",
-          "充電器類",
-          "ライトニング（iPhone）",
-          [1, 2, 3, 4, 5, 6],
-        );
-        createMulti(
-          "chargerCable",
-          "充電器類",
-          "タイプC",
-          [1, 2, 3, 4, 5, 6],
-        );
-        createMulti(
-          "extensionCable",
-          "充電器類",
-          "延長コード",
-          [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        );
-      }
-
-      function borrow() {
-        const num = document.querySelector(".screen.active input").value;
-        if (!num || !selected.items.length) return;
-        selected.items.forEach((item) => {
-          data.push({
-            type: selected.type,
-            item,
-            number: num,
-            date: new Date().toLocaleString(),
-            checker: false,
-          });
-
-          // 300件を超えたら、最も古いデータを削除
-          if (data.length > 300) {
-            data.shift();
           }
-
-          createToast(`${item}を借りました`);
+          area.appendChild(btn);
         });
-        localStorage.setItem("lendData", JSON.stringify(data));
-        showScreen("home");
       }
 
-      function borrowGame() {
-        const name = freeGame.value || selected.items[0];
-        const num = regBoard.value;
-        if (!name || !num) return;
+      // =====================================================
+      // 貸出処理
+      // =====================================================
+
+      // 貸出データの保存・トースト表示・ホーム画面への遷移をまとめた共通処理
+      function saveAndReturn(item, type, num) {
         data.push({
-          type: "ボドゲ・タブレット・その他",
-          item: name,
+          type,
+          item,
           number: num,
           date: new Date().toLocaleString(),
           checker: false,
         });
 
-        // 300件を超えたら、最も古いデータを削除
-        if (data.length > 300) {
+        if (data.length > MAX_HISTORY) {
           data.shift();
         }
 
-        createToast(`${name}を借りました`);
         localStorage.setItem("lendData", JSON.stringify(data));
+        createToast(`${item}を借りました`);
         showScreen("home");
       }
 
-      function drawHistory() {
-        historyBody.innerHTML = "";
-        [...data].reverse().forEach((d, i) => {
-          const originalIndex = data.length - 1 - i;
+      // 卓球ラケット・コントローラー・充電器類の借りるボタン処理
+      // 選択中の物品をすべて記録する
+      function borrow() {
+        const num = document.querySelector(".screen.active input").value;
+        if (!num || !selected.items.length) return;
 
-          historyBody.innerHTML += `
+        selected.items.forEach((item) => {
+          saveAndReturn(item, selected.type, num);
+        });
+      }
+
+      // ボドゲ画面の借りるボタン処理
+      // ボタン選択と直接入力のどちらにも対応する
+      function borrowGame() {
+        const name = freeGame.value || selected.items[0];
+        const num = regBoard.value;
+        if (!name || !num) return;
+
+        saveAndReturn(name, "ボドゲ・その他", num);
+      }
+
+      // =====================================================
+      // 貸出履歴の表示・操作
+      // =====================================================
+
+      // 貸出履歴を新しい順に表示する
+      // HTML文字列を一度に組み立ててから反映することで、DOM操作の回数を最小限に抑える
+      function drawHistory() {
+        const rows = [...data].reverse().map((d, i) => {
+          const originalIndex = data.length - 1 - i;
+          return `
           <tr>
             <td>${d.date}</td>
             <td>${d.item}</td>
@@ -723,13 +797,16 @@
             </td>
           </tr>`;
         });
+        historyBody.innerHTML = rows.join("");
       }
 
+      // 返却確認チェックボックスの状態を保存する
       function toggleCheck(index, checked) {
         data[index].checker = checked;
         localStorage.setItem("lendData", JSON.stringify(data));
       }
 
+      // 貸出履歴をすべて削除する
       function deleteAllHistory() {
         if (!confirm("貸出履歴をすべて削除しますか？")) return;
 
@@ -738,6 +815,7 @@
         drawHistory();
       }
 
+      // 指定した行の履歴を1件削除する
       function deleteRow(index) {
         if (!confirm("この履歴を削除しますか？")) return;
 
@@ -746,6 +824,11 @@
         drawHistory();
       }
 
+      // =====================================================
+      // トースト通知
+      // =====================================================
+
+      // 指定したメッセージのトーストを表示し、5秒後に自動で消す
       function createToast(message) {
         const toasts = document.getElementById("toasts");
         const toast = document.createElement("div");
@@ -757,6 +840,9 @@
           toast.remove();
         }, 5000);
       }
+
+      // アプリ起動時の初期化：ホーム画面のメニューを生成する
+      buildMenu();
     </script>
   </body>
 </html>
